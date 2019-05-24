@@ -1,6 +1,5 @@
 const bodyParser = require('body-parser');
 const express = require('express');
-const mongoose = require('mongoose');
 
 const Dishes = require('../models/dishes');
 
@@ -31,7 +30,7 @@ dishRouter.route('/')
   }
 )
 .put(
-  (_req, res, next) => {
+  (_req, res, _next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /dishes');
   }
@@ -62,7 +61,7 @@ dishRouter.route('/:dishId')
   }
 )
 .post(
-  (req, res, next) => {
+  (req, res, _next) => {
     res.statusCode = 403;
     res.end(`POST operation not supported on /dishes/${req.params.dishId}`);
   }
@@ -191,7 +190,7 @@ dishRouter.route('/:dishId/comments/:commentId')
   }
 )
 .post(
-  (req, res, next) => {
+  (req, res, _next) => {
     res.statusCode = 403;
     res.end(
       `POST operation not supported on /dishes/${req.params.dishId}/comments/${req.params.commentId}`
