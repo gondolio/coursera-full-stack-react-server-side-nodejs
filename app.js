@@ -30,34 +30,54 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser('my-secret-key'));
 
 function auth(req, res, next) {
-  console.log(req.headers);
+  console.log(req.signedCookies);
 
-  const authHeader = req.headers.authorization;
+  if (!req.signedCookies.user) {
+    const authHeader = req.headers.authorization;
 
-  if (!authHeader) {
-    const err = new Error('You are not authenticated!');
+    if (!authHeader) {
+      const err = new Error('You are not authenticated!');
 
-    res.setHeader('WWW-Authenticate', 'Basic');
-    err.status = 401;
-    return next(err);
-  }
+      res.setHeader('WWW-Authenticate', 'Basic');
+      err.status = 401;
+      return next(err);
+    }
 
-  const auth = new Buffer(authHeader.split(' ')[1], 'base64').toString().split(':');
+    const auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
 
-  const username = auth[0];
-  const password = auth[1];
+    const username = auth[0];
+    const password = auth[1];
 
-  if (username === 'admin' && password === 'password') {
-    next();
+    if (username === 'admin' && password === 'password') {
+      res.cookie(
+        'user',
+        'admin',
+        {
+          signed: true,
+        }
+      );
+      next();
+    } else {
+      const err = new Error('Username/Password not known!');
+
+      res.setHeader('WWW-Authenticate', 'Basic');
+      err.status = 401;
+      return next(err);
+    }
   } else {
-    const err = new Error('Username/Password not known!');
+    if (req.signedCookies.user === 'admin') {
+      next();
+    } else {
+      // invalid cookie
+      const err = new Error('Malformed cookie - you are not authenticated!');
 
-    res.setHeader('WWW-Authenticate', 'Basic');
-    err.status = 401;
-    return next(err);
+      res.setHeader('WWW-Authenticate', 'Basic');
+      err.status = 401;
+      return next(err);
+    }
   }
 }
 
