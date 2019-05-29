@@ -3,6 +3,8 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -30,12 +32,19 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser('my-secret-key'));
+//app.use(cookieParser('my-secret-key'));
+app.use(session({
+  name: 'session-id',
+  secret: 'my-secret-key',
+  saveUninitialized: false,
+  resave: false,
+  store: new FileStore()
+}));
 
 function auth(req, res, next) {
-  console.log(req.signedCookies);
+  console.log(req.session);
 
-  if (!req.signedCookies.user) {
+  if (!req.session.user) {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
@@ -52,13 +61,7 @@ function auth(req, res, next) {
     const password = auth[1];
 
     if (username === 'admin' && password === 'password') {
-      res.cookie(
-        'user',
-        'admin',
-        {
-          signed: true,
-        }
-      );
+      req.session.user = 'admin';
       next();
     } else {
       const err = new Error('Username/Password not known!');
@@ -68,7 +71,7 @@ function auth(req, res, next) {
       return next(err);
     }
   } else {
-    if (req.signedCookies.user === 'admin') {
+    if (req.session.user === 'admin') {
       next();
     } else {
       // invalid cookie
