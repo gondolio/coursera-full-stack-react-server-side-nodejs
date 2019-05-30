@@ -1,7 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const User = require('../models/user');
 const passport = require('passport');
+
+const User = require('../models/user');
+const authenticate = require('../authenticate');
 
 const router = express.Router();
 router.use(bodyParser.json());
@@ -44,12 +46,14 @@ router.post(
   '/login',
   passport.authenticate('local'),
   (req, res, next) => {
+    const token = authenticate.getToken({ _id: req.user._id });
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     res.json(
       {
         status: 'You are successfully logged in!',
         success: true,
+        token: token,
       }
     );        
   }

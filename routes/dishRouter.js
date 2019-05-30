@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 
+const authenticate = require('../authenticate');
 const Dishes = require('../models/dishes');
 
 const dishRouter = express.Router();
@@ -18,6 +19,7 @@ dishRouter.route('/')
   }
 )
 .post(
+  authenticate.verifyUser,
   (req, res, next) => {
     Dishes.create(req.body)
     .then((dish) => {
@@ -30,12 +32,14 @@ dishRouter.route('/')
   }
 )
 .put(
+  authenticate.verifyUser,
   (_req, res, _next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /dishes');
   }
 )
 .delete(
+  authenticate.verifyUser,
   (_req, res, next) => {
     Dishes.remove({})
     .then((resp) => {
@@ -67,6 +71,7 @@ dishRouter.route('/:dishId')
   }
 )
 .put(
+  authenticate.verifyUser,
   (req, res, next) => {
     Dishes.findByIdAndUpdate(req.params.dishId, {
       $set: req.body
@@ -81,6 +86,7 @@ dishRouter.route('/:dishId')
   }
 )
 .delete(
+  authenticate.verifyUser,
   (req, res, next) => {
     Dishes.findByIdAndRemove(req.params.dishId)
     .then((resp) => {
@@ -113,6 +119,7 @@ dishRouter.route('/:dishId/comments')
   }
 )
 .post(
+  authenticate.verifyUser,
   (req, res, next) => {
     Dishes.findById(req.params.dishId)
     .then((dish) => {
@@ -135,12 +142,14 @@ dishRouter.route('/:dishId/comments')
   }
 )
 .put(
+  authenticate.verifyUser,
   (req, res, _next) => {
     res.statusCode = 403;
     res.end(`PUT operation not supported on /dishes/${req.params.dishId}/comments`);
   }
 )
 .delete(
+  authenticate.verifyUser,
   (req, res, next) => {
     Dishes.findById(req.params.dishId)
     .then((dish) => {
@@ -190,6 +199,7 @@ dishRouter.route('/:dishId/comments/:commentId')
   }
 )
 .post(
+  authenticate.verifyUser,
   (req, res, _next) => {
     res.statusCode = 403;
     res.end(
@@ -198,6 +208,7 @@ dishRouter.route('/:dishId/comments/:commentId')
   }
 )
 .put(
+  authenticate.verifyUser,
   (req, res, next) => {
     Dishes.findById(req.params.dishId)
     .then((dish) => {
@@ -231,6 +242,7 @@ dishRouter.route('/:dishId/comments/:commentId')
   }
 )
 .delete(
+  authenticate.verifyUser,
   (req, res, next) => {
     Dishes.findById(req.params.dishId)
     .then((dish) => {
