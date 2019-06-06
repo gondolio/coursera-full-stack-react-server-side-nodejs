@@ -165,6 +165,7 @@ dishRouter.route('/:dishId/comments')
 )
 .delete(
   authenticate.verifyUser,
+  authenticate.verifyAdmin,
   (req, res, next) => {
     Dishes.findById(req.params.dishId)
     .then((dish) => {
