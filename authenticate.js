@@ -61,8 +61,7 @@ exports.verifyUser = passport.authenticate('jwt', { session: false });
 // verifyAdmin expects verifyUser to be called first
 exports.verifyAdmin = function(req, res, next) {
   if (req.user.admin) {
-    next();
-    return;
+    return next();
   }
 
   const err = new Error('You are not authorized to perform this operation!');
