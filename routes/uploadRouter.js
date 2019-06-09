@@ -35,7 +35,6 @@ const upload = multer(
   {
     storage: storage,
     fileFilter: imageFileFilter,
-
   }
 );
 
