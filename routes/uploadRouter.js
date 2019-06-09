@@ -77,6 +77,4 @@ uploadRouter.route('/')
   }
 )
 
-
-
 module.exports = uploadRouter;
