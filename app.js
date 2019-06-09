@@ -8,11 +8,12 @@ const mongoose = require('mongoose');
 
 const config = require('./config');
 
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
 const dishRouter = require('./routes/dishRouter');
+const indexRouter = require('./routes/index');
 const leaderRouter = require('./routes/leaderRouter');
 const promoRouter = require('./routes/promoRouter');
+const uploadRouter = require('./routes/uploadRouter');
+const usersRouter = require('./routes/users');
 
 
 const url = config.mongoUrl;
@@ -49,9 +50,9 @@ app.use('/users', usersRouter);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/dishes', dishRouter); 
+app.use('/imageUpload', uploadRouter);
 app.use('/leaders', leaderRouter);
 app.use('/promotions', promoRouter);
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
