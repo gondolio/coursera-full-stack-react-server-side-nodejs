@@ -1,13 +1,21 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 
+const cors = require('./cors');
 const authenticate = require('../authenticate');
 const Promotions = require('../models/promotions');
 
 const promoRouter = express.Router();
 promoRouter.use(bodyParser.json());
 promoRouter.route('/')
+.options(
+  cors.corsWithOptions, 
+  (req, res) => { 
+    res.sendStatus(200);
+  }
+)
 .get(
+  cors.cors,
   (_req, res, next) => {
     Promotions.find({})
     .then((promotions) => {
@@ -19,6 +27,7 @@ promoRouter.route('/')
   }
 )
 .post(
+  cors.corsWithOptions, 
   authenticate.verifyUser,
   authenticate.verifyAdmin,
   (req, res, next) => {
@@ -33,6 +42,7 @@ promoRouter.route('/')
   }
 )
 .put(
+  cors.corsWithOptions, 
   authenticate.verifyUser,
   authenticate.verifyAdmin,
   (_req, res, _next) => {
@@ -41,6 +51,7 @@ promoRouter.route('/')
   }
 )
 .delete(
+  cors.corsWithOptions, 
   authenticate.verifyUser,
   authenticate.verifyAdmin,
   (_req, res, next) => {
@@ -55,7 +66,14 @@ promoRouter.route('/')
 );
 
 promoRouter.route('/:promoId')
+.options(
+  cors.corsWithOptions, 
+  (req, res) => { 
+    res.sendStatus(200);
+  }
+)
 .get(
+  cors.cors,
   (req, res, next) => {
     Promotions.findById(req.params.promoId)
     .then((promotion) => {
@@ -68,6 +86,7 @@ promoRouter.route('/:promoId')
   }
 )
 .post(
+  cors.corsWithOptions, 
   authenticate.verifyUser,
   authenticate.verifyAdmin,
   (req, res, _next) => {
@@ -76,6 +95,7 @@ promoRouter.route('/:promoId')
   }
 )
 .put(
+  cors.corsWithOptions, 
   authenticate.verifyUser,
   authenticate.verifyAdmin,
   (req, res, next) => {
@@ -92,6 +112,7 @@ promoRouter.route('/:promoId')
   }
 )
 .delete(
+  cors.corsWithOptions, 
   authenticate.verifyUser,
   authenticate.verifyAdmin,
   (req, res, next) => {

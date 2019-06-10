@@ -1,13 +1,21 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 
+const cors = require('./cors');
 const authenticate = require('../authenticate');
 const Leaders = require('../models/leaders');
 
 const leaderRouter = express.Router();
 leaderRouter.use(bodyParser.json());
 leaderRouter.route('/')
+.options(
+  cors.corsWithOptions, 
+  (req, res) => { 
+    res.sendStatus(200);
+  }
+)
 .get(
+  cors.cors,
   (_req, res, next) => {
     Leaders.find({})
     .then((leaders) => {
@@ -19,6 +27,7 @@ leaderRouter.route('/')
   }
 )
 .post(
+  cors.corsWithOptions, 
   authenticate.verifyUser,
   authenticate.verifyAdmin,
   (req, res, next) => {
@@ -33,6 +42,7 @@ leaderRouter.route('/')
   }
 )
 .put(
+  cors.corsWithOptions, 
   authenticate.verifyUser,
   authenticate.verifyAdmin,
   (_req, res, _next) => {
@@ -41,6 +51,7 @@ leaderRouter.route('/')
   }
 )
 .delete(
+  cors.corsWithOptions, 
   authenticate.verifyUser,
   authenticate.verifyAdmin,
   (_req, res, next) => {
@@ -55,7 +66,14 @@ leaderRouter.route('/')
 );
 
 leaderRouter.route('/:leaderId')
+.options(
+  cors.corsWithOptions, 
+  (req, res) => { 
+    res.sendStatus(200);
+  }
+)
 .get(
+  cors.cors,
   (req, res, next) => {
     Leaders.findById(req.params.leaderId)
     .then((leader) => {
@@ -68,6 +86,7 @@ leaderRouter.route('/:leaderId')
   }
 )
 .post(
+  cors.corsWithOptions, 
   authenticate.verifyUser,
   authenticate.verifyAdmin,
   (req, res, _next) => {
@@ -76,6 +95,7 @@ leaderRouter.route('/:leaderId')
   }
 )
 .put(
+  cors.corsWithOptions, 
   authenticate.verifyUser,
   authenticate.verifyAdmin,
   (req, res, next) => {
@@ -92,6 +112,7 @@ leaderRouter.route('/:leaderId')
   }
 )
 .delete(
+  cors.corsWithOptions, 
   authenticate.verifyUser,
   authenticate.verifyAdmin,
   (req, res, next) => {
