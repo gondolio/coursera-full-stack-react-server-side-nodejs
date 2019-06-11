@@ -11,7 +11,7 @@ router.use(bodyParser.json());
 
 /* GET users listing. */
 router.get(
-  '/', 
+  '/',
   cors.corsWithOptions,
   authenticate.verifyUser,
   authenticate.verifyAdmin,
@@ -27,7 +27,7 @@ router.get(
 );
 
 router.post(
-  '/signup', 
+  '/signup',
   cors.corsWithOptions,
   (req, res, next) => {
     User.register(
@@ -41,7 +41,7 @@ router.post(
         if (err) {
           res.statusCode = 500;
           res.setHeader('Content-Type', 'application/json');
-          res.json({err: err});      
+          res.json({err: err});
         } else {
           if (req.body.firstname)
             user.firstname = req.body.firstname;
@@ -53,7 +53,7 @@ router.post(
             if (err) {
               res.statusCode = 500;
               res.setHeader('Content-Type', 'application/json');
-              res.json({err: err});          
+              res.json({err: err});
               return;
             }
             passport.authenticate('local')(req, res, () => {
@@ -64,7 +64,7 @@ router.post(
                   status: 'Registration Successful!',
                   success: true,
                 }
-              );        
+              );
             });
           })
         }
@@ -87,7 +87,7 @@ router.post(
         success: true,
         token: token,
       }
-    );        
+    );
   }
 );
 
@@ -106,5 +106,24 @@ router.get(
     }
   }
 );
+
+router.get(
+  '/facebook/token/',
+  passport.authenticate('facebook-token'),
+  (req, res) => {
+    if (req.user) {
+      const token = authenticate.getToken({ _id: req.user._id });
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(
+        {
+          status: 'You are successfully logged in!',
+          success: true,
+          token: token,
+        }
+      );
+    }
+  },
+)
 
 module.exports = router;
