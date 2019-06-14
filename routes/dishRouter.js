@@ -90,9 +90,9 @@ dishRouter.route('/:dishId')
 )
 .post(
   cors.corsWithOptions,
+  authenticate.verifyUser,
+  authenticate.verifyAdmin,  
   (req, res, _next) => {
-    authenticate.verifyUser,
-    authenticate.verifyAdmin,  
     res.statusCode = 403;
     res.end(`POST operation not supported on /dishes/${req.params.dishId}`);
   }
