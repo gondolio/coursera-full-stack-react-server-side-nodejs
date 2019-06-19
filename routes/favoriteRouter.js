@@ -24,9 +24,14 @@ const addToFavorites = (req, res, next) => {
           favorite.dishes = existingDishIds.concat(newDishesToAdd);
           favorite.save()
           .then((favorite) => {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.json(favorite);
+            Favorites.findById(favorite._id)
+            .populate('user')
+            .populate('dishes')
+            .then((favorite) => {
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              res.json(favorite);
+            })
           }, (err) => next(err));
         } else {
           // No new dishes, just return the existing favorite entry
@@ -42,10 +47,15 @@ const addToFavorites = (req, res, next) => {
         };
         Favorites.create(newFavorite)
         .then((favorite) => {
-          console.log('Favorite Created ', favorite);
-          res.statusCode = 200;
-          res.setHeader('Content-Type', 'application/json');
-          res.json(favorite);
+          Favorites.findById(favorite._id)
+          .populate('user')
+          .populate('dishes')
+          .then((favorite) => {
+            console.log('Favorite Created ', favorite);
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.json(favorite);  
+          })
         }, (err) => next(err))
         .catch((err) => next(err));
       }
@@ -116,8 +126,19 @@ favoriteRouter.route('/:dishId')
   cors.corsWithOptions,
   authenticate.verifyUser,
   (_req, res, _next) => {
-    res.statusCode = 403;
-    res.end(`GET operation not supported on /favorites/${req.params.dishId}`);
+    Favorites.findOne({ user: req.user._id})
+    .then((favorites) => {
+      const exists = favorites && (favorites.dishes.indexOf(req.params.dishId) >= 0);
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      return res.json(
+        { 
+          "exists": exists,
+          "favorites": favorites,
+        }
+      );    
+    }, (err) => next(err))
+    .catch((err) => next(err))
   }
 )
 .post(
@@ -154,9 +175,14 @@ favoriteRouter.route('/:dishId')
           favorite.dishes = existingDishIds.filter((id) => id != req.params.dishId);
           favorite.save()
           .then((favorite) => {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.json(favorite);
+            Favorites.findById(favorite._id)
+            .populate('user')
+            .populate('dishes')
+            .then((favorite) => {
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              res.json(favorite);
+            })
           }, (err) => next(err));  
         } else {
           // If nothing to delete just return the entry

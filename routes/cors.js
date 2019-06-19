@@ -5,6 +5,7 @@ const app = express();
 
 const whitelist = [
   'http://localhost:3000',
+  'http://Orens-MacBook-Pro.local:3001', // For the client app
   'https://localhost:3443',
 ];
 

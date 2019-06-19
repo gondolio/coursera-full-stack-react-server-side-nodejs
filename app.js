@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 
 const config = require('./config');
 
+const commentRouter = require('./routes/commentRouter');
 const dishRouter = require('./routes/dishRouter');
 const favoriteRouter = require('./routes/favoriteRouter');
 const indexRouter = require('./routes/index');
@@ -50,6 +51,7 @@ app.use('/users', usersRouter);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/comments', commentRouter);
 app.use('/dishes', dishRouter); 
 app.use('/favorites', favoriteRouter); 
 app.use('/imageUpload', uploadRouter);
